@@ -1,0 +1,41 @@
+pipeline{
+    agent any
+      tools{
+        terraform 'terraform-11'
+      }
+   stages{
+       stage('git clone'){
+           steps{
+               git credentialsId: 'GIT_CREDENTIALS', url: 'https://github.com/renujankar/THREE-TIER-ARCHITECTURE.git'
+           }
+       }
+       stage('terraform init'){
+           steps{
+               sh "terraform init"
+           }
+       }
+       stage('terraorm validate'){
+           steps{
+               sh "terraform validate"
+           }
+       }
+       stage('terraform apply'){
+           steps{
+               sh "terraform apply --auto-approve"
+           }
+       }
+       stage('permission to script file'){
+           steps{
+               sh "chmod +x /var/lib/jenkins/workspace/THREE-TIER-ARCHITECHTURE/install_apache.sh"
+               sh "sudo chown jenkins:jenkins /var/www/html/index.html"
+               sh "sudo chmod u+w /var/www/html/index.html"
+
+           }
+       }
+       stage('run apache script'){
+           steps{
+               sh "./install_apache.sh"
+           }
+       }
+   }
+}
